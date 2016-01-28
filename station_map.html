@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.3&key=110c573f233d8e8a75b96d48f7a2f678"+new Date()></script>  
+</head>
+	<style type="text/css">
+	    document,html,body{height: 100%;width: 100%;}
+	    *{padding:0px;margin:0px;}
+        #container {width:80%; height:100%; overflow: auto; float: left;}
+        #panel {width:20%; height:100%; overflow: auto; float: left;}
+	</style>
+	<body>
+	    <div id="container"></div>
+        <div id="panel">
+            起点<input type="text" id="startArea" onclick="clickInput(this)" value=""><br>
+            终点<input type="text" id="endArea" onclick="clickInput(this)" value=""><br>
+            <input type="button" onclick="addPoint()" value="添加" style="width:90%;"><br>
+            <textarea style="width:100%;height:80%;margin:0px;padding:0px;" id="txtArea"></textarea>
+            <input type="button" onclick="createLinep()" value="创建" style="margin:0px;padding:0px;width:100%;height:10%;margin-top:10px;text-align:center;">
+        </div>
+		<script type="text/javascript">
+        var data = {"灞桥":{"id":1,"wayLine":"G30","lv":0.08,"road":"西临高速","region":"灞桥","name":"灞桥","lat":34.300877,"lng":109.076076}
+,"豁口":{"id":2,"wayLine":"G30","lv":0.08,"road":"西临高速","region":"豁口","name":"豁口","lat":34.319852,"lng":109.111973}
+,"临潼西":{"id":3,"wayLine":"G30","lv":0.08,"road":"西临高速","region":"临潼西","name":"临潼西","lat":34.53297,"lng":109.214313}
+,"兵马俑":{"id":5,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"兵马俑","name":"兵马俑","lat":34.403869,"lng":109.225867}
+,"新丰":{"id":6,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"新丰","name":"新丰","lat":34.431114,"lng":109.262981}
+,"渭南西":{"id":7,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"渭南西","name":"渭南西","lat":34.490301,"lng":109.457693}
+,"渭南东":{"id":8,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"渭南东","name":"渭南东","lat":34.49142,"lng":109.536664}
+,"华县西":{"id":9,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"华县西","name":"华县西","lat":34.493463,"lng":109.692482}
+,"华县":{"id":10,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"华县","name":"华县","lat":34.498568,"lng":109.765589}
+,"夫水":{"id":11,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"夫水","name":"夫水","lat":34.539639,"lng":109.949578}
+,"华阴":{"id":12,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"华阴","name":"华阴","lat":34.548644,"lng":110.096728}
+,"港口":{"id":13,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"港口","name":"港口","lat":34.603344,"lng":110.283258}
+,"秦东":{"id":14,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"秦东","name":"秦东","lat":34.597927,"lng":110.33118}
+,"潼关":{"id":15,"wayLine":"G30","lv":0.12,"road":"临潼高速","region":"潼关","name":"潼关","lat":34.572931,"lng":110.365483}
+,"三桥":{"id":17,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"三桥","name":"三桥","lat":34.299224,"lng":108.803886}
+,"咸阳":{"id":18,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"咸阳","name":"咸阳","lat":34.310915,"lng":108.712275}
+,"咸阳西":{"id":19,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"咸阳西","name":"咸阳西","lat":34.296708,"lng":108.655454}
+,"兴平":{"id":20,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"兴平","name":"兴平","lat":34.276372,"lng":108.509807}
+,"武功":{"id":21,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"武功","name":"武功","lat":34.248226,"lng":108.219574}
+,"杨凌":{"id":22,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"杨凌","name":"杨凌","lat":34.255817,"lng":108.109715}
+,"绛帐":{"id":23,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"绛帐","name":"绛帐","lat":34.264099,"lng":107.949854}
+,"法门寺":{"id":24,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"法门寺","name":"法门寺","lat":34.318451,"lng":107.920055}
+,"太白山":{"id":25,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"太白山","name":"太白山","lat":34.261261,"lng":107.9215}
+,"常兴":{"id":26,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"常兴","name":"常兴","lat":34.265164,"lng":107.841618}
+,"杨凌西":{"id":27,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"杨凌西","name":"杨凌西","lat":34.26774,"lng":108.02842}
+,"眉县":{"id":28,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"眉县","name":"眉县","lat":34.302996,"lng":107.719991}
+,"蔡家坡":{"id":29,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"蔡家坡","name":"蔡家坡","lat":34.306172,"lng":107.621995}
+,"虢镇":{"id":30,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"虢镇","name":"虢镇","lat":34.34866,"lng":107.394894}
+,"宝鸡":{"id":31,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"宝鸡","name":"宝鸡","lat":34.359044,"lng":107.203917}
+,"阿房宫":{"id":32,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"阿房宫","name":"阿房宫","lat":34.252508,"lng":108.806757}
+,"咸阳南":{"id":33,"wayLine":"G30","lv":0.12,"road":"西宝高速","region":"咸阳南","name":"咸阳南","lat":34.251355,"lng":108.676344}
+,"宝鸡西":{"id":35,"wayLine":"G30","lv":0.12,"road":"宝牛高速","region":"宝鸡西","name":"宝鸡西","lat":34.367055,"lng":107.061894}
+,"坪头":{"id":36,"wayLine":"G30","lv":0.12,"road":"宝牛高速","region":"坪头","name":"坪头","lat":34.391773,"lng":106.885449}
+,"陈仓":{"id":37,"wayLine":"G30","lv":0.12,"road":"宝牛高速","region":"陈仓","name":"陈仓","lat":34.390543,"lng":106.87369}
+,"陈仓匝道":{"id":38,"wayLine":"G30","lv":0.12,"road":"宝牛高速","region":"陈仓匝道","name":"陈仓匝道","lat":null,"lng":null}
+,"姜城":{"id":39,"wayLine":"G30","lv":0.12,"road":"宝牛高速","region":"姜城","name":"姜城","lat":34.356508,"lng":107.124759}
+,"陇关":{"id":41,"wayLine":"宝汉高速","lv":0.12,"road":"宝汉高速","region":"陇关","name":"陇关","lat":35.032184,"lng":106.784026}
+,"火烧寨":{"id":42,"wayLine":"宝汉高速","lv":0.12,"road":"宝汉高速","region":"火烧寨","name":"火烧寨","lat":35.019603,"lng":106.787706}
+,"陇县":{"id":43,"wayLine":"宝汉高速","lv":0.12,"road":"宝汉高速","region":"陇县","name":"陇县","lat":34.872603,"lng":106.900142}
+,"水沟":{"id":44,"wayLine":"宝汉高速","lv":0.12,"road":"宝汉高速","region":"水沟","name":"水沟","lat":34.752887,"lng":107.020999}
+,"千阳":{"id":45,"wayLine":"宝汉高速","lv":0.12,"road":"宝汉高速","region":"千阳","name":"千阳","lat":34.653132,"lng":107.098343}
+,"南寨":{"id":46,"wayLine":"宝汉高速","lv":0.12,"road":"宝汉高速","region":"南寨","name":"南寨","lat":34.649999,"lng":107.171747}
+,"凤翔":{"id":47,"wayLine":"宝汉高速","lv":0.12,"road":"宝汉高速","region":"凤翔","name":"凤翔","lat":34.484856,"lng":107.303507}
+,"渭南北":{"id":49,"wayLine":"宝汉高速","lv":0.12,"road":"渭蒲高速","region":"渭南北","name":"渭南北","lat":34.648806,"lng":109.62371}
+,"吝店":{"id":50,"wayLine":"宝汉高速","lv":0.12,"road":"渭蒲高速","region":"吝店","name":"吝店","lat":34.722438,"lng":109.63148}
+,"卤阳湖":{"id":51,"wayLine":"宝汉高速","lv":0.12,"road":"渭蒲高速","region":"卤阳湖","name":"卤阳湖","lat":34.845611,"lng":109.644422}
+,"蒲城东":{"id":52,"wayLine":"宝汉高速","lv":0.12,"road":"渭蒲高速","region":"蒲城东","name":"蒲城东","lat":34.948552,"lng":109.638363}
+,"茶镇":{"id":54,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"茶镇","name":"茶镇","lat":33.006358,"lng":108.113808}
+,"午子山":{"id":55,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"午子山","name":"午子山","lat":32.96539,"lng":107.82752}
+,"西乡":{"id":56,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"西乡","name":"西乡","lat":32.961005,"lng":107.737918}
+,"沙河":{"id":57,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"沙河","name":"沙河","lat":32.950816,"lng":107.506018}
+,"盐井":{"id":58,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"盐井","name":"盐井","lat":33.019262,"lng":107.311529}
+,"铺镇":{"id":59,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"铺镇","name":"铺镇","lat":33.096616,"lng":107.143603}
+,"汉中北":{"id":60,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"汉中北","name":"汉中北","lat":33.166638,"lng":107.041334}
+,"褒城":{"id":61,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"褒城","name":"褒城","lat":33.169926,"lng":106.972484}
+,"新街子":{"id":62,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"新街子","name":"新街子","lat":33.187266,"lng":106.837952}
+,"勉县北":{"id":63,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"勉县北","name":"勉县北","lat":33.185431,"lng":106.722569}
+,"茶店":{"id":64,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"茶店","name":"茶店","lat":33.191685,"lng":106.463136}
+,"五郎坪":{"id":65,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"五郎坪","name":"五郎坪","lat":33.30666,"lng":106.369865}
+,"略阳":{"id":66,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"略阳","name":"略阳","lat":33.367067,"lng":106.18036}
+,"陕西略阳":{"id":67,"wayLine":"G7011","lv":0.12,"road":"十天西略","region":"陕西略阳","name":"陕西略阳","lat":33.565283,"lng":106.054144}
+,"流水":{"id":69,"wayLine":"G65","lv":0.14,"road":"安川高速","region":"流水","name":"流水","lat":32.606545,"lng":108.717904}
+,"蒿坪":{"id":70,"wayLine":"G65","lv":0.14,"road":"安川高速","region":"蒿坪","name":"蒿坪","lat":32.592181,"lng":108.637276}
+,"紫阳":{"id":71,"wayLine":"G65","lv":0.14,"road":"安川高速","region":"紫阳","name":"紫阳","lat":32.512353,"lng":108.508006}
+,"权河":{"id":72,"wayLine":"G65","lv":0.14,"road":"安川高速","region":"权河","name":"权河","lat":32.45185,"lng":108.406914}
+,"毛坝":{"id":73,"wayLine":"G65","lv":0.14,"road":"安川高速","region":"毛坝","name":"毛坝","lat":32.350906,"lng":108.277422}
+,"巴山":{"id":74,"wayLine":"G65","lv":0.14,"road":"安川高速","region":"巴山","name":"巴山","lat":32.278883,"lng":108.146921}
+,"陕川界":{"id":75,"wayLine":"G65","lv":0.14,"road":"安川高速","region":"陕川界","name":"陕川界","lat":null,"lng":null}
+,"华胥":{"id":77,"wayLine":"G40","lv":0.12,"road":"西商高速","region":"华胥","name":"华胥","lat":34.218456,"lng":109.23923}
+,"蓝田":{"id":78,"wayLine":"G40","lv":0.12,"road":"西商高速","region":"蓝田","name":"蓝田","lat":34.135767,"lng":109.406523}
+,"玉山":{"id":79,"wayLine":"G40","lv":0.12,"road":"西商高速","region":"玉山","name":"玉山","lat":34.196249,"lng":109.48253}
+,"灞源":{"id":80,"wayLine":"G40","lv":0.12,"road":"西商高速","region":"灞源","name":"灞源","lat":34.14603,"lng":109.676205}
+,"腰市":{"id":81,"wayLine":"G40","lv":0.12,"road":"西商高速","region":"腰市","name":"腰市","lat":34.037803,"lng":109.929735}
+,"洛南":{"id":82,"wayLine":"G40","lv":0.12,"road":"西商高速","region":"洛南","name":"洛南","lat":34.073395,"lng":110.086086}
+,"板桥":{"id":83,"wayLine":"G40","lv":0.12,"road":"西商高速","region":"板桥","name":"板桥","lat":33.976323,"lng":109.961299}
+,"商洛":{"id":84,"wayLine":"G40","lv":0.12,"road":"西商高速","region":"商洛","name":"商洛","lat":33.86419,"lng":109.97967}
+,"铜川新区":{"id":86,"wayLine":"G65W","lv":0.12,"road":"西铜二道","region":"铜川新区","name":"铜川新区","lat":34.866863,"lng":108.966495}
+,"马额":{"id":87,"wayLine":"G65W","lv":0.12,"road":"西铜二道","region":"马额","name":"马额","lat":34.825307,"lng":108.918904}
+,"新兴":{"id":88,"wayLine":"G65W","lv":0.12,"road":"西铜二道","region":"新兴","name":"新兴","lat":34.738328,"lng":108.918747}
+,"三原":{"id":89,"wayLine":"G65W","lv":0.12,"road":"西铜二道","region":"三原","name":"三原","lat":34.607203,"lng":108.908486}
+,"泾阳":{"id":90,"wayLine":"G65W","lv":0.12,"road":"西铜二道","region":"泾阳","name":"泾阳","lat":34.522018,"lng":108.915695}
+,"聂冯":{"id":91,"wayLine":"G65W","lv":0.12,"road":"西铜二道","region":"聂冯","name":"聂冯","lat":34.446869,"lng":108.969332}
+,"神木北":{"id":93,"wayLine":"S20","lv":0.14,"road":"神府高速","region":"神木北","name":"神木北","lat":38.891366,"lng":110.51711}
+,"永兴":{"id":94,"wayLine":"S20","lv":0.14,"road":"神府高速","region":"永兴","name":"永兴","lat":38.966199,"lng":110.600406}
+,"石马":{"id":95,"wayLine":"S20","lv":0.14,"road":"神府高速","region":"石马","name":"石马","lat":38.941061,"lng":110.883634}
+,"府谷南":{"id":96,"wayLine":"S20","lv":0.14,"road":"神府高速","region":"府谷南","name":"府谷南","lat":38.962337,"lng":110.982031}
+,"府谷":{"id":97,"wayLine":"S20","lv":0.14,"road":"神府高速","region":"府谷","name":"府谷","lat":38.964431,"lng":110.977564}
+,"牛家梁":{"id":99,"wayLine":"S20","lv":0.12,"road":"榆绥高速","region":"牛家梁","name":"牛家梁","lat":38.395659,"lng":109.722222}
+,"古城滩":{"id":100,"wayLine":"S20","lv":0.12,"road":"榆绥高速","region":"古城滩","name":"古城滩","lat":38.354998,"lng":109.756743}
+,"榆林南":{"id":101,"wayLine":"S20","lv":0.12,"road":"榆绥高速","region":"榆林南","name":"榆林南","lat":38.157219,"lng":109.781354}
+,"鱼河":{"id":102,"wayLine":"S20","lv":0.12,"road":"榆绥高速","region":"鱼河","name":"鱼河","lat":37.970091,"lng":109.871064}
+,"镇川":{"id":103,"wayLine":"S20","lv":0.12,"road":"榆绥高速","region":"镇川","name":"镇川","lat":37.90042,"lng":110.046104}
+,"米脂":{"id":104,"wayLine":"S20","lv":0.12,"road":"榆绥高速","region":"米脂","name":"米脂","lat":37.715906,"lng":110.192117}
+,"四十里铺":{"id":105,"wayLine":"S20","lv":0.12,"road":"榆绥高速","region":"四十里铺","name":"四十里铺","lat":37.620987,"lng":110.223907}
+,"史家湾":{"id":106,"wayLine":"S20","lv":0.12,"road":"榆绥高速","region":"史家湾","name":"史家湾","lat":37.545672,"lng":110.194524}
+,"青云":{"id":108,"wayLine":"榆佳高速","lv":0.14,"road":"榆佳高速","region":"青云","name":"青云","lat":38.301915,"lng":109.810942}
+,"麻黄梁":{"id":109,"wayLine":"榆佳高速","lv":0.14,"road":"榆佳高速","region":"麻黄梁","name":"麻黄梁","lat":38.362334,"lng":109.939095}
+,"王家砭":{"id":110,"wayLine":"榆佳高速","lv":0.14,"road":"榆佳高速","region":"王家砭","name":"王家砭","lat":38.252652,"lng":110.239878}
+,"通镇":{"id":111,"wayLine":"榆佳高速","lv":0.14,"road":"榆佳高速","region":"通镇","name":"通镇","lat":38.166051,"lng":110.353632}
+,"佳县":{"id":112,"wayLine":"榆佳高速","lv":0.14,"road":"榆佳高速","region":"佳县","name":"佳县","lat":38.042827,"lng":110.474609}
+,"陕西佳县":{"id":113,"wayLine":"榆佳高速","lv":0.14,"road":"榆佳高速","region":"陕西佳县","name":"陕西佳县","lat":38.042827,"lng":110.474609}
+,"锦阳湖":{"id":115,"wayLine":"延西高速","lv":0.12,"road":"铜黄二道","region":"锦阳湖","name":"锦阳湖","lat":35.001294,"lng":108.933106}
+,"演池":{"id":116,"wayLine":"延西高速","lv":0.12,"road":"铜黄二道","region":"演池","name":"演池","lat":35.091855,"lng":108.995959}
+,"招安":{"id":118,"wayLine":"延吴高速","lv":0.12,"road":"延志吴高速","region":"招安","name":"招安","lat":36.831505,"lng":109.162539}
+,"候市":{"id":119,"wayLine":"延吴高速","lv":0.12,"road":"延志吴高速","region":"候市","name":"候市","lat":null,"lng":null}
+,"志丹":{"id":120,"wayLine":"延吴高速","lv":0.12,"road":"延志吴高速","region":"志丹","name":"志丹","lat":36.867979,"lng":108.72622}
+,"志丹南":{"id":121,"wayLine":"延吴高速","lv":0.12,"road":"延志吴高速","region":"志丹南","name":"志丹南","lat":null,"lng":null}
+,"吴起":{"id":122,"wayLine":"延吴高速","lv":0.12,"road":"延志吴高速","region":"吴起","name":"吴起","lat":36.933449,"lng":108.241315}
+,"阿房宫":{"id":124,"wayLine":"","lv":0.08,"road":"绕城高速","region":"阿房宫","name":"阿房宫","lat":34.252508,"lng":108.806757}
+,"河池寨":{"id":125,"wayLine":"","lv":0.08,"road":"绕城高速","region":"河池寨","name":"河池寨","lat":34.197966,"lng":108.831907}
+,"西高新":{"id":126,"wayLine":"","lv":0.08,"road":"绕城高速","region":"西高新","name":"西高新","lat":34.191676,"lng":108.894202}
+,"长安路":{"id":127,"wayLine":"","lv":0.08,"road":"绕城高速","region":"长安路","name":"长安路","lat":34.189617,"lng":108.944419}
+,"曲江":{"id":128,"wayLine":"","lv":0.08,"road":"绕城高速","region":"曲江","name":"曲江","lat":34.202679,"lng":109.002164}
+,"纺织城":{"id":129,"wayLine":"","lv":0.08,"road":"绕城高速","region":"纺织城","name":"纺织城","lat":34.251191,"lng":109.064421}
+,"香王":{"id":130,"wayLine":"","lv":0.08,"road":"绕城高速","region":"香王","name":"香王","lat":34.277308,"lng":109.084817}
+,"新筑":{"id":131,"wayLine":"","lv":0.08,"road":"绕城高速","region":"新筑","name":"新筑","lat":34.348105,"lng":109.06476}
+,"杏园":{"id":132,"wayLine":"","lv":0.08,"road":"绕城高速","region":"杏园","name":"杏园","lat":34.357762,"lng":109.021294}
+,"未央":{"id":133,"wayLine":"","lv":0.08,"road":"绕城高速","region":"未央","name":"未央","lat":34.366857,"lng":108.954897}
+,"未央(北)":{"id":134,"wayLine":"","lv":0.08,"road":"绕城高速","region":"未央(北)","name":"未央(北)","lat":34.367352,"lng":108.955779}
+,"富平":{"id":136,"wayLine":"G5","lv":0.08,"road":"阎禹高速","region":"富平","name":"富平","lat":34.727776,"lng":109.226785}
+,"荆姚":{"id":137,"wayLine":"G5","lv":0.08,"road":"阎禹高速","region":"荆姚","name":"荆姚","lat":34.856753,"lng":109.446979}
+,"蒲城":{"id":138,"wayLine":"G5","lv":0.08,"road":"阎禹高速","region":"蒲城","name":"蒲城","lat":34.907349,"lng":109.604978}
+,"孙镇":{"id":139,"wayLine":"G5","lv":0.08,"road":"阎禹高速","region":"孙镇","name":"孙镇","lat":34.937549,"lng":109.762745}
+,"澄城":{"id":140,"wayLine":"G5","lv":0.08,"road":"阎禹高速","region":"澄城","name":"澄城","lat":35.000845,"lng":109.935372}
+,"合阳":{"id":141,"wayLine":"G5","lv":0.08,"road":"阎禹高速","region":"合阳","name":"合阳","lat":35.211703,"lng":110.160501}
+,"芝川":{"id":142,"wayLine":"G5","lv":0.08,"road":"阎禹高速","region":"芝川","name":"芝川","lat":35.34411,"lng":110.38671}
+,"韩城":{"id":143,"wayLine":"G5","lv":0.08,"road":"阎禹高速","region":"韩城","name":"韩城","lat":35.477353,"lng":110.472443}
+,"龙门":{"id":144,"wayLine":"G5","lv":0.08,"road":"阎禹高速","region":"龙门","name":"龙门","lat":35.570312,"lng":110.520432}
+,"禹门口":{"id":145,"wayLine":"G5","lv":0.08,"road":"阎禹高速","region":"禹门口","name":"禹门口","lat":35.576872,"lng":110.534975}
+,"西禹小计 ":{"id":147,"wayLine":"G5","lv":0.08,"road":"西阎高速","region":"西禹小计 ","name":"西禹小计 ","lat":null,"lng":null}
+,"高陵":{"id":148,"wayLine":"G5","lv":0.08,"road":"西阎高速","region":"高陵","name":"高陵","lat":34.524541,"lng":109.11345}
+,"阎良":{"id":149,"wayLine":"G5","lv":0.08,"road":"西阎高速","region":"阎良","name":"阎良","lat":34.654941,"lng":109.188015}
+,"户县":{"id":151,"wayLine":"G5","lv":0.1,"road":"西汉高速","region":"户县","name":"户县","lat":34.103859,"lng":108.677403}
+,"涝峪":{"id":152,"wayLine":"G5","lv":0.1,"road":"西汉高速","region":"涝峪","name":"涝峪","lat":34.037285,"lng":108.551935}
+,"三星":{"id":153,"wayLine":"G5","lv":0.1,"road":"西汉高速","region":"三星","name":"三星","lat":34.14874,"lng":108.757602}
+,"金水":{"id":154,"wayLine":"G5","lv":0.1,"road":"西汉高速","region":"金水","name":"金水","lat":33.272954,"lng":107.839505}
+,"大河坝":{"id":155,"wayLine":"G5","lv":0.1,"road":"西汉高速","region":"大河坝","name":"大河坝","lat":33.305152,"lng":108.047209}
+,"宁陕":{"id":156,"wayLine":"G5","lv":0.1,"road":"西汉高速","region":"宁陕","name":"宁陕","lat":33.411813,"lng":108.238771}
+,"皇冠":{"id":157,"wayLine":"G5","lv":0.1,"road":"西汉高速","region":"皇冠","name":"皇冠","lat":33.590994,"lng":108.404088}
+,"朱雀":{"id":158,"wayLine":"G5","lv":0.1,"road":"西汉高速","region":"朱雀","name":"朱雀","lat":33.832335,"lng":108.51729}
+,"纸坊":{"id":159,"wayLine":"G5","lv":0.1,"road":"西汉高速","region":"纸坊","name":"纸坊","lat":33.952279,"lng":108.527185}
+,"龙亭":{"id":161,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"龙亭","name":"龙亭","lat":33.205452,"lng":107.651021}
+,"洋县":{"id":162,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"洋县","name":"洋县","lat":33.199964,"lng":107.530202}
+,"城固":{"id":163,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"城固","name":"城固","lat":33.127307,"lng":107.367413}
+,"上元观":{"id":164,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"上元观","name":"上元观","lat":33.088372,"lng":107.235743}
+,"汉中东":{"id":165,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"汉中东","name":"汉中东","lat":33.049339,"lng":107.137083}
+,"汉中":{"id":166,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"汉中","name":"汉中","lat":33.022477,"lng":107.001267}
+,"勉县":{"id":167,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"勉县","name":"勉县","lat":33.071846,"lng":106.675398}
+,"胡家坝":{"id":168,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"胡家坝","name":"胡家坝","lat":32.97537,"lng":106.476147}
+,"韩家坝":{"id":169,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"韩家坝","name":"韩家坝","lat":32.847811,"lng":106.36027}
+,"宁强立交":{"id":170,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"宁强立交","name":"宁强立交","lat":null,"lng":null}
+,"宁强":{"id":171,"wayLine":"G5","lv":0.1,"road":"汉宁高速","region":"宁强","name":"宁强","lat":32.820494,"lng":106.253212}
+,"铜川":{"id":173,"wayLine":"G65","lv":null,"road":"西铜高速","region":"铜川","name":"铜川","lat":34.881042,"lng":108.906679}
+,"黄堡匝道":{"id":174,"wayLine":"G65","lv":null,"road":"西铜高速","region":"黄堡匝道","name":"黄堡匝道","lat":null,"lng":null}
+,"西安北":{"id":175,"wayLine":"G65","lv":null,"road":"西铜高速","region":"西安北","name":"西安北","lat":34.493884,"lng":108.975259}
+,"铜川开放":{"id":176,"wayLine":"G65","lv":null,"road":"西铜高速","region":"铜川开放","name":"铜川开放","lat":null,"lng":null}
+,"黄堡开放":{"id":177,"wayLine":"G65","lv":null,"road":"西铜高速","region":"黄堡开放","name":"黄堡开放","lat":null,"lng":null}
+,"耀州北开放":{"id":178,"wayLine":"G65","lv":null,"road":"西铜高速","region":"耀州北开放","name":"耀州北开放","lat":34.921877,"lng":108.986535}
+,"铜川新区":{"id":179,"wayLine":"G65","lv":null,"road":"西铜高速","region":"铜川新区","name":"铜川新区","lat":34.866863,"lng":108.966495}
+,"川口":{"id":181,"wayLine":"G65","lv":0.08,"road":"铜黄高速","region":"川口","name":"川口","lat":35.057381,"lng":109.059062}
+,"金锁关":{"id":182,"wayLine":"G65","lv":0.08,"road":"铜黄高速","region":"金锁关","name":"金锁关","lat":35.197052,"lng":109.068349}
+,"宜君":{"id":183,"wayLine":"G65","lv":0.08,"road":"铜黄高速","region":"宜君","name":"宜君","lat":35.435135,"lng":109.114205}
+,"黄陵":{"id":184,"wayLine":"G65","lv":0.08,"road":"铜黄高速","region":"黄陵","name":"黄陵","lat":35.575506,"lng":109.229846}
+,"彭镇":{"id":185,"wayLine":"G65","lv":0.08,"road":"铜黄高速","region":"彭镇","name":"彭镇","lat":35.496531,"lng":109.150617}
+,"铜延小计":{"id":187,"wayLine":"G65","lv":0.08,"road":"黄延高速","region":"铜延小计","name":"铜延小计","lat":null,"lng":null}
+,"延安南":{"id":188,"wayLine":"G65","lv":0.08,"road":"黄延高速","region":"延安南","name":"延安南","lat":36.498388,"lng":109.459264}
+,"甘泉":{"id":189,"wayLine":"G65","lv":0.08,"road":"黄延高速","region":"甘泉","name":"甘泉","lat":36.271046,"lng":109.510483}
+,"南泥湾":{"id":190,"wayLine":"G65","lv":0.08,"road":"黄延高速","region":"南泥湾","name":"南泥湾","lat":36.361917,"lng":109.549771}
+,"富县":{"id":191,"wayLine":"G65","lv":0.08,"road":"黄延高速","region":"富县","name":"富县","lat":36.097315,"lng":108.724777}
+,"洛川":{"id":192,"wayLine":"G65","lv":0.08,"road":"黄延高速","region":"洛川","name":"洛川","lat":35.770996,"lng":109.410334}
+,"阿党":{"id":193,"wayLine":"G65","lv":0.08,"road":"黄延高速","region":"阿党","name":"阿党","lat":35.690043,"lng":109.275208}
+,"延安北":{"id":195,"wayLine":"G65","lv":0.08,"road":"延塞高速","region":"延安北","name":"延安北","lat":36.647021,"lng":109.44493}
+,"沿河湾":{"id":196,"wayLine":"G65","lv":0.08,"road":"延塞高速","region":"沿河湾","name":"沿河湾","lat":36.763253,"lng":109.354571}
+,"安塞南":{"id":197,"wayLine":"G65","lv":0.08,"road":"延塞高速","region":"安塞南","name":"安塞南","lat":36.855815,"lng":109.331074}
+,"安塞北":{"id":198,"wayLine":"G65","lv":0.08,"road":"延塞高速","region":"安塞北","name":"安塞北","lat":36.887166,"lng":109.318126}
+,"建华寺":{"id":200,"wayLine":"G65","lv":0.08,"road":"靖安(安塞段)","region":"建华寺","name":"建华寺","lat":36.954042,"lng":109.293246}
+,"化子坪":{"id":201,"wayLine":"G65","lv":0.08,"road":"靖安(安塞段)","region":"化子坪","name":"化子坪","lat":37.072039,"lng":109.104682}
+,"镰刀湾":{"id":202,"wayLine":"G65","lv":0.08,"road":"靖安(安塞段)","region":"镰刀湾","name":"镰刀湾","lat":37.202244,"lng":108.986065}
+,"天赐湾":{"id":204,"wayLine":"G65","lv":0.08,"road":"靖安(靖边段)","region":"天赐湾","name":"天赐湾","lat":37.324012,"lng":108.936966}
+,"李家湾":{"id":205,"wayLine":"G65","lv":0.08,"road":"靖安(靖边段)","region":"李家湾","name":"李家湾","lat":37.3561,"lng":108.943993}
+,"乔沟湾":{"id":206,"wayLine":"G65","lv":0.08,"road":"靖安(靖边段)","region":"乔沟湾","name":"乔沟湾","lat":37.427609,"lng":108.917471}
+,"靖边南":{"id":207,"wayLine":"G65","lv":0.08,"road":"靖安(靖边段)","region":"靖边南","name":"靖边南","lat":37.544654,"lng":108.861093}
+,"靖边东":{"id":208,"wayLine":"G65","lv":0.08,"road":"靖安(靖边段)","region":"靖边东","name":"靖边东","lat":37.608224,"lng":108.849544}
+,"榆林":{"id":210,"wayLine":"G65","lv":0.08,"road":"榆靖高速","region":"榆林","name":"榆林","lat":38.302915,"lng":109.698388}
+,"西左界":{"id":211,"wayLine":"G65","lv":0.08,"road":"榆靖高速","region":"西左界","name":"西左界","lat":38.132407,"lng":109.357512}
+,"横山":{"id":212,"wayLine":"G65","lv":0.08,"road":"榆靖高速","region":"横山","name":"横山","lat":38.040625,"lng":109.239349}
+,"黄蒿界":{"id":213,"wayLine":"G65","lv":0.08,"road":"榆靖高速","region":"黄蒿界","name":"黄蒿界","lat":37.85516,"lng":109.059297}
+,"王圈梁":{"id":215,"wayLine":"G20","lv":0.08,"road":"靖王高速","region":"王圈梁","name":"王圈梁","lat":37.72693,"lng":107.503637}
+,"定边":{"id":216,"wayLine":"G20","lv":0.08,"road":"靖王高速","region":"定边","name":"定边","lat":37.632886,"lng":107.591363}
+,"砖井":{"id":217,"wayLine":"G20","lv":0.08,"road":"靖王高速","region":"砖井","name":"砖井","lat":37.546182,"lng":107.820004}
+,"安边":{"id":218,"wayLine":"G20","lv":0.08,"road":"靖王高速","region":"安边","name":"安边","lat":37.532379,"lng":108.066054}
+,"良镇":{"id":219,"wayLine":"G20","lv":0.08,"road":"靖王高速","region":"良镇","name":"良镇","lat":37.543086,"lng":108.385483}
+,"东坑":{"id":220,"wayLine":"G20","lv":0.08,"road":"靖王高速","region":"东坑","name":"东坑","lat":37.569061,"lng":108.583135}
+,"靖边西":{"id":221,"wayLine":"G20","lv":0.08,"road":"靖王高速","region":"靖边西","name":"靖边西","lat":37.628507,"lng":108.782079}
+,"王则湾":{"id":223,"wayLine":"G65","lv":0.08,"road":"榆蒙高速","region":"王则湾","name":"王则湾","lat":38.402293,"lng":109.697306}
+,"孟家湾":{"id":224,"wayLine":"G65","lv":0.08,"road":"榆蒙高速","region":"孟家湾","name":"孟家湾","lat":38.582639,"lng":109.663784}
+,"小壕兔":{"id":225,"wayLine":"G65","lv":0.08,"road":"榆蒙高速","region":"小壕兔","name":"小壕兔","lat":38.740814,"lng":109.688694}
+,"红碱淖":{"id":226,"wayLine":"G65","lv":0.08,"road":"榆蒙高速","region":"红碱淖","name":"红碱淖","lat":38.995876,"lng":109.791938}
+,"陕蒙界":{"id":227,"wayLine":"G65","lv":0.08,"road":"榆蒙高速","region":"陕蒙界","name":"陕蒙界","lat":39.058733,"lng":109.788612}
+,"金鸡滩":{"id":229,"wayLine":"S20","lv":0.12,"road":"榆神高速","region":"金鸡滩","name":"金鸡滩","lat":38.47947,"lng":109.791135}
+,"大保当":{"id":230,"wayLine":"S20","lv":0.12,"road":"榆神高速","region":"大保当","name":"大保当","lat":38.594055,"lng":109.946398}
+,"锦界":{"id":231,"wayLine":"S20","lv":0.12,"road":"榆神高速","region":"锦界","name":"锦界","lat":38.704413,"lng":110.091855}
+,"西沟":{"id":232,"wayLine":"S20","lv":0.12,"road":"榆神高速","region":"西沟","name":"西沟","lat":38.799794,"lng":110.273107}
+,"神木":{"id":233,"wayLine":"S20","lv":0.12,"road":"榆神高速","region":"神木","name":"神木","lat":38.846682,"lng":110.443952}
+,"店塔":{"id":234,"wayLine":"S20","lv":0.12,"road":"榆神高速","region":"店塔","name":"店塔","lat":39.004137,"lng":110.478783}
+,"韦曲":{"id":236,"wayLine":"G65","lv":0.12,"road":"西柞高速","region":"韦曲","name":"韦曲","lat":34.153985,"lng":109.001255}
+,"太乙宫":{"id":237,"wayLine":"G65","lv":0.12,"road":"西柞高速","region":"太乙宫","name":"太乙宫","lat":34.041566,"lng":109.011476}
+,"营盘":{"id":238,"wayLine":"G65","lv":0.12,"road":"西柞高速","region":"营盘","name":"营盘","lat":33.77928,"lng":109.043298}
+,"柞水":{"id":239,"wayLine":"G65","lv":0.12,"road":"西柞高速","region":"柞水","name":"柞水","lat":33.665683,"lng":109.120866}
+,"镇安":{"id":240,"wayLine":"G65","lv":0.12,"road":"西柞高速","region":"镇安","name":"镇安","lat":33.43217,"lng":109.172168}
+,"东坪":{"id":241,"wayLine":"G65","lv":0.12,"road":"西柞高速","region":"东坪","name":"东坪","lat":33.30359,"lng":109.177694}
+,"小河":{"id":242,"wayLine":"G65","lv":0.12,"road":"西柞高速","region":"小河","name":"小河","lat":33.148611,"lng":109.133801}
+,"茨沟":{"id":244,"wayLine":"G65","lv":0.12,"road":"小康高速","region":"茨沟","name":"茨沟","lat":32.930171,"lng":108.968757}
+,"谭坝":{"id":245,"wayLine":"G65","lv":0.12,"road":"小康高速","region":"谭坝","name":"谭坝","lat":32.879989,"lng":108.962962}
+,"五里":{"id":246,"wayLine":"G65","lv":0.12,"road":"小康高速","region":"五里","name":"五里","lat":32.714956,"lng":108.903912}
+,"安康":{"id":248,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"安康","name":"安康","lat":32.693365,"lng":108.958643}
+,"恒口":{"id":249,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"恒口","name":"恒口","lat":32.734904,"lng":108.742502}
+,"蒲溪":{"id":250,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"蒲溪","name":"蒲溪","lat":32.803735,"lng":108.644742}
+,"安康东":{"id":251,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"安康东","name":"安康东","lat":32.679416,"lng":109.065104}
+,"汉阴":{"id":252,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"汉阴","name":"汉阴","lat":32.86915,"lng":108.527652}
+,"池河":{"id":253,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"池河","name":"池河","lat":32.947139,"lng":108.356418}
+,"石泉":{"id":254,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"石泉","name":"石泉","lat":32.998644,"lng":108.287637}
+,"旬阳":{"id":255,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"旬阳","name":"旬阳","lat":32.750729,"lng":109.358848}
+,"神河":{"id":256,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"神河","name":"神河","lat":32.688558,"lng":109.46014}
+,"张河":{"id":257,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"张河","name":"张河","lat":32.715655,"lng":109.53239}
+,"双河":{"id":258,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"双河","name":"双河","lat":32.715998,"lng":109.756738}
+,"茅坪":{"id":259,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"茅坪","name":"茅坪","lat":32.707729,"lng":109.954964}
+,"白河":{"id":260,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"白河","name":"白河","lat":32.732894,"lng":110.138202}
+,"陕西白河":{"id":261,"wayLine":"G7011","lv":0.12,"road":"十天高速","region":"陕西白河","name":"陕西白河","lat":32.732894,"lng":110.138202}
+,"阎村":{"id":263,"wayLine":"G70","lv":0.14,"road":"商漫高速","region":"阎村","name":"阎村","lat":33.718668,"lng":109.82394}
+,"山阳":{"id":264,"wayLine":"G70","lv":0.14,"road":"商漫高速","region":"山阳","name":"山阳","lat":33.544647,"lng":109.878481}
+,"高坝":{"id":265,"wayLine":"G70","lv":0.14,"road":"商漫高速","region":"高坝","name":"高坝","lat":33.490333,"lng":110.0496}
+,"天竺山":{"id":266,"wayLine":"G70","lv":0.14,"road":"商漫高速","region":"天竺山","name":"天竺山","lat":33.385302,"lng":110.080399}
+,"漫川关匝道":{"id":267,"wayLine":"G70","lv":0.14,"road":"商漫高速","region":"漫川关匝道","name":"漫川关匝道","lat":null,"lng":null}
+,"漫川关主线":{"id":268,"wayLine":"G70","lv":0.14,"road":"商漫高速","region":"漫川关主线","name":"漫川关主线","lat":null,"lng":null}
+,"空工":{"id":270,"wayLine":"G312","lv":null,"road":"西蓝高速","region":"空工","name":"空工","lat":34.238898,"lng":109.143131}
+,"白鹿塬":{"id":271,"wayLine":"G312","lv":null,"road":"西蓝高速","region":"白鹿塬","name":"白鹿塬","lat":34.17414,"lng":109.292368}
+,"蓝田东":{"id":273,"wayLine":"G40","lv":0.12,"road":"蓝商高速","region":"蓝田东","name":"蓝田东","lat":34.127531,"lng":109.324409}
+,"辋川":{"id":274,"wayLine":"G40","lv":0.12,"road":"蓝商高速","region":"辋川","name":"辋川","lat":34.072731,"lng":109.343086}
+,"葛牌":{"id":275,"wayLine":"G40","lv":0.12,"road":"蓝商高速","region":"葛牌","name":"葛牌","lat":33.957087,"lng":109.464226}
+,"杨斜":{"id":276,"wayLine":"G40","lv":0.12,"road":"蓝商高速","region":"杨斜","name":"杨斜","lat":33.856777,"lng":109.662077}
+,"南城子":{"id":277,"wayLine":"G40","lv":0.12,"road":"蓝商高速","region":"南城子","name":"南城子","lat":33.845718,"lng":109.821474}
+,"商洛西":{"id":278,"wayLine":"G40","lv":0.12,"road":"蓝商高速","region":"商洛西","name":"商洛西","lat":33.855459,"lng":109.90685}
+,"商洛东":{"id":280,"wayLine":"G40","lv":0.12,"road":"商界高速","region":"商洛东","name":"商洛东","lat":33.809928,"lng":110.024527}
+,"棣花":{"id":281,"wayLine":"G40","lv":0.12,"road":"商界高速","region":"棣花","name":"棣花","lat":33.724601,"lng":110.195362}
+,"丹凤":{"id":282,"wayLine":"G40","lv":0.12,"road":"商界高速","region":"丹凤","name":"丹凤","lat":33.701893,"lng":110.279204}
+,"竹林关":{"id":283,"wayLine":"G40","lv":0.12,"road":"商界高速","region":"竹林关","name":"竹林关","lat":33.471366,"lng":110.445237}
+,"金丝峡":{"id":284,"wayLine":"G40","lv":0.12,"road":"商界高速","region":"金丝峡","name":"金丝峡","lat":33.451426,"lng":110.574242}
+,"过凤楼":{"id":285,"wayLine":"G40","lv":0.12,"road":"商界高速","region":"过凤楼","name":"过凤楼","lat":33.433974,"lng":110.784407}
+,"商南西":{"id":286,"wayLine":"G40","lv":0.12,"road":"商界高速","region":"商南西","name":"商南西","lat":33.474067,"lng":110.866606}
+,"界牌":{"id":287,"wayLine":"G40","lv":0.12,"road":"商界高速","region":"界牌","name":"界牌","lat":null,"lng":null}
+,"汉城":{"id":289,"wayLine":"机场专用高速","lv":0.12,"road":"机场专线","region":"汉城","name":"汉城","lat":34.365386,"lng":108.919774}
+,"北环路":{"id":290,"wayLine":"机场专用高速","lv":0.12,"road":"机场专线","region":"北环路","name":"北环路","lat":34.391611,"lng":108.914363}
+,"马家堡":{"id":291,"wayLine":"机场专用高速","lv":0.12,"road":"机场专线","region":"马家堡","name":"马家堡","lat":34.44591,"lng":108.896601}
+,"机场":{"id":292,"wayLine":"机场专用高速","lv":0.12,"road":"机场专线","region":"机场","name":"机场","lat":34.446076,"lng":108.813023}
+,"六村堡":{"id":294,"wayLine":"G70","lv":0.08,"road":"机场高速","region":"六村堡","name":"六村堡","lat":34.336593,"lng":108.845025}
+,"咸阳东":{"id":295,"wayLine":"G70","lv":0.08,"road":"机场高速","region":"咸阳东","name":"咸阳东","lat":34.373346,"lng":108.802481}
+,"机场西":{"id":296,"wayLine":"G70","lv":0.08,"road":"机场高速","region":"机场西","name":"机场西","lat":34.418914,"lng":108.736217}
+,"马庄":{"id":298,"wayLine":"G70","lv":0.08,"road":"咸永高速","region":"马庄","name":"马庄","lat":34.427155,"lng":108.661057}
+,"西张堡":{"id":299,"wayLine":"G70","lv":0.08,"road":"咸永高速","region":"西张堡","name":"西张堡","lat":34.492217,"lng":108.530851}
+,"礼泉":{"id":300,"wayLine":"G70","lv":0.08,"road":"咸永高速","region":"礼泉","name":"礼泉","lat":34.510432,"lng":108.429039}
+,"乾县":{"id":301,"wayLine":"G70","lv":0.08,"road":"咸永高速","region":"乾县","name":"乾县","lat":34.517904,"lng":108.284964}
+,"乾陵":{"id":302,"wayLine":"G70","lv":0.08,"road":"咸永高速","region":"乾陵","name":"乾陵","lat":34.58926,"lng":108.257098}
+,"永寿南":{"id":303,"wayLine":"G70","lv":0.08,"road":"咸永高速","region":"永寿南","name":"永寿南","lat":34.680544,"lng":108.167078}
+,"永寿南":{"id":305,"wayLine":"G70","lv":0.1,"road":"凤永高速","region":"永寿南","name":"永寿南","lat":34.680544,"lng":108.167078}
+,"渡马":{"id":306,"wayLine":"G70","lv":0.1,"road":"凤永高速","region":"渡马","name":"渡马","lat":34.753759,"lng":108.159521}
+,"太峪":{"id":307,"wayLine":"G70","lv":0.1,"road":"凤永高速","region":"太峪","name":"太峪","lat":34.93856,"lng":108.070247}
+,"彬县":{"id":308,"wayLine":"G70","lv":0.1,"road":"凤永高速","region":"彬县","name":"彬县","lat":35.021501,"lng":108.126054}
+,"亭口":{"id":309,"wayLine":"G70","lv":0.1,"road":"凤永高速","region":"亭口","name":"亭口","lat":35.106342,"lng":107.954029}
+,"长武":{"id":310,"wayLine":"G70","lv":0.1,"road":"凤永高速","region":"长武","name":"长武","lat":35.233339,"lng":107.746356}
+,"陕甘界":{"id":311,"wayLine":"G70","lv":0.1,"road":"凤永高速","region":"陕甘界","name":"陕甘界","lat":null,"lng":null}
+,"杨桥畔":{"id":313,"wayLine":"G20","lv":0.1,"road":"子靖高速","region":"杨桥畔","name":"杨桥畔","lat":37.612602,"lng":109.002534}
+,"双城":{"id":314,"wayLine":"G20","lv":0.1,"road":"子靖高速","region":"双城","name":"双城","lat":37.542741,"lng":109.32924}
+,"魏家楼":{"id":315,"wayLine":"G20","lv":0.1,"road":"子靖高速","region":"魏家楼","name":"魏家楼","lat":37.550854,"lng":109.534588}
+,"巡检司":{"id":316,"wayLine":"G20","lv":0.1,"road":"子靖高速","region":"巡检司","name":"巡检司","lat":37.597903,"lng":109.869556}
+,"子洲":{"id":317,"wayLine":"G20","lv":0.1,"road":"子靖高速","region":"子洲","name":"子洲","lat":37.597544,"lng":110.05265}
+,"绥德":{"id":319,"wayLine":"G20","lv":0.1,"road":"吴子高速","region":"绥德","name":"绥德","lat":37.55892,"lng":110.254449}
+,"中角":{"id":320,"wayLine":"G20","lv":0.1,"road":"吴子高速","region":"中角","name":"中角","lat":37.573041,"lng":110.502075}
+,"辛家沟":{"id":321,"wayLine":"G20","lv":0.1,"road":"吴子高速","region":"辛家沟","name":"辛家沟","lat":37.570704,"lng":110.632008}
+,"吴堡":{"id":322,"wayLine":"G20","lv":0.1,"road":"吴子高速","region":"吴堡","name":"吴堡","lat":37.459062,"lng":110.687673}
+,"陕晋界":{"id":323,"wayLine":"G20","lv":0.1,"road":"吴子高速","region":"陕晋界","name":"陕晋界","lat":37.46226,"lng":110.68769}
+,"陕西壶口":{"id":325,"wayLine":"G22","lv":0.12,"road":"青兰高速","region":"陕西壶口","name":"陕西壶口","lat":36.070078,"lng":110.347492}
+,"秋林":{"id":326,"wayLine":"G22","lv":0.12,"road":"青兰高速","region":"秋林","name":"秋林","lat":36.081928,"lng":110.273285}
+,"宜川":{"id":327,"wayLine":"G22","lv":0.12,"road":"青兰高速","region":"宜川","name":"宜川","lat":36.011618,"lng":110.145192}
+,"瓦子街":{"id":328,"wayLine":"G22","lv":0.12,"road":"青兰高速","region":"瓦子街","name":"瓦子街","lat":35.974088,"lng":110.035759}
+,"厢寺川":{"id":329,"wayLine":"G22","lv":0.12,"road":"青兰高速","region":"厢寺川","name":"厢寺川","lat":35.957695,"lng":109.624902}
+,"富县南":{"id":330,"wayLine":"G22","lv":0.12,"road":"青兰高速","region":"富县南","name":"富县南","lat":35.933707,"lng":109.374366}
+,"张村驿":{"id":331,"wayLine":"G22","lv":0.12,"road":"青兰高速","region":"张村驿","name":"张村驿","lat":35.887059,"lng":109.155839}
+,"直罗":{"id":332,"wayLine":"G22","lv":0.12,"road":"青兰高速","region":"直罗","name":"直罗","lat":35.963202,"lng":109.010029}
+,"张家湾":{"id":333,"wayLine":"G22","lv":0.12,"road":"青兰高速","region":"张家湾","name":"张家湾","lat":36.079501,"lng":108.7957}
+,"陕西富县":{"id":334,"wayLine":"G22","lv":0.12,"road":"青兰高速","region":"陕西富县","name":"陕西富县","lat":36.097315,"lng":108.724777}};
+
+mapObj = new AMap.Map("container");
+            AMap.plugin(['AMap.ToolBar','AMap.Scale','AMap.OverView'],function(){
+                var toolBar = new AMap.ToolBar();
+                var scale = new AMap.Scale();
+                mapObj.addControl(toolBar);
+                mapObj.addControl(scale);
+            });
+
+var point = "阿房宫-河池寨,河池寨-西高新,西高新-长安路,长安路-曲江,曲江-纺织城,纺织城-香王,香王-新筑,新筑-杏园,杏园-未央,未央-六村堡,六村堡-三桥,三桥-阿房宫,未央-长安路";
+
+currentTag = null;
+
+function clickInput(obj){
+    currentTag = obj;
+}
+
+function addPoint(){
+    start = document.getElementById("startArea");
+    end = document.getElementById("endArea");
+
+    if(start.value.length<2 || end.value.length<2){
+    	alert("请选择点");
+    	return;
+    }
+    
+    txArea = document.getElementById("txtArea");
+    txArea.value = start.value+"-"+end.value+",\r\n"+txArea.value;
+
+    var arr = new Array();
+    arr.push(new AMap.LngLat(start.lng,start.lat)); 
+    arr.push(new AMap.LngLat(end.lng,end.lat)); 
+    createLine(mapObj,arr,"green");
+   
+    start.value = end.value;
+    start.lng = end.lng;
+    start.lat = end.lat;
+
+    end.value = "";
+    end.lng=null;
+    end.lat = null;
+}
+
+function createLinep(){
+    var tx = document.getElementById("txtArea").value;
+    tx=tx.replace(/\ +/g,"");//去掉空格
+    tx=tx.replace(/[ ]/g,""); //去掉空格
+    tx=tx.replace(/[\r\n]/g,"");//去掉回车换
+    lines = [];
+    if(tx.length>4){
+        lines = tx.split(",");
+        if(lines.length<1){
+        	return;
+        }
+        mapObj.clearMap();
+        mapObj = new AMap.Map("container");
+        AMap.plugin(['AMap.ToolBar','AMap.Scale','AMap.OverView'],function(){
+            var toolBar = new AMap.ToolBar();
+            var scale = new AMap.Scale();
+            mapObj.addControl(toolBar);
+            mapObj.addControl(scale);
+            draw(lines);
+        });
+        infoWindow = new AMap.InfoWindow();
+    }
+}
+
+function draw(lines){
+	var temstr = "";
+    var pointLines = new Array();
+
+    for(var i=0;i<lines.length;i++){
+        temstr = lines[i];
+        pointLines.push(createAmapArray(temstr)); 
+    }
+    
+    for(var i=0;i<pointLines.length;i++){
+        var d = pointLines[i];
+        createLine(mapObj,d["line"],"green");
+        st = createWindow(d["start"]);
+
+        //openWindow(mapObj,st,d["start"]);
+        createMark(mapObj,st,[d["start"]["lng"],d["start"]["lat"]],d["start"]["name"]);
+
+        st = createWindow(d["end"]);
+        //openWindow(mapObj,st,d["end"]);
+        createMark(mapObj,st,[d["end"]["lng"],d["end"]["lat"]],d["end"]["name"]);
+    }
+    crteateAllPoint();
+}
+
+function crteateAllPoint(){
+    for(var p in data){
+        st = createWindow(data[p]);
+        createMark(mapObj,st,[data[p]["lng"],data[p]["lat"]],data[p]["name"]);
+    }
+}
+
+function createAmapArray(stra){
+    var str = stra.split("-");
+    var arr = new Array();
+    ob1 = data[str[0]];
+    arr.push(new AMap.LngLat(ob1["lng"],ob1["lat"])); 
+    ob2 = data[str[1]];
+    arr.push(new AMap.LngLat(ob2["lng"],ob2["lat"])); 
+
+    return {"start":ob1,"end":ob2,"line":arr};
+}       
+
+infoWindow = new AMap.InfoWindow();
+function markerClick(e){
+	if(currentTag !=null){
+		currentTag.value = e.target.title;
+		currentTag.lng = e.target.local[0];
+		currentTag.lat = e.target.local[1];
+	}
+}
+
+function markerdbClick(e){
+    infoWindow.setContent(e.target.content);
+    infoWindow.open(mapObj, e.target.getPosition());
+}
+
+function createMark(map,content,local,title){
+   var marker= new AMap.Marker({position:local,map:mapObj,title:title});
+   marker.content = content;
+   marker.title = title;
+   marker.local = local;
+   marker.on('click', markerClick);
+   marker.on('dblclick', markerdbClick);
+   
+}
+
+//调整视野到合适的位置及级别                 
+//mapObj.setFitView(); 
+function createLine(map,path,color){
+    new AMap.Polyline({map:map,path:path,strokeColor:color,strokeOpacity:1,strokeWeight:5});  
+}
+
+driving = null;
+AMap.service('AMap.Driving',function(){driving = new AMap.Driving({"map":mapObj,"panel":"showLines"});})
+
+function openWindow(map,content,obj){
+  new AMap.InfoWindow({"content":content}).open(map,[obj["lng"],obj["lat"]]);
+}
+
+function createWindow(obj){
+    var str = "<div style='background-color:#eee;width:200px;'>";
+    str += "高速编号："+obj["wayLine"]+"<br/>";
+    str += "高速名称："+obj["road"]+"<br/>";
+    str += "费率："+obj["lv"]+"<br/>";
+    str += "收费站名称："+obj["region"]+"<br/>";
+    str += "纬度："+obj["lat"]+"<br/>";
+    str += "经度："+obj["lng"]+"<br/>";
+    str += "</div>";
+
+    return str;
+}
+
+crteateAllPoint();
+
+	    </script>
+	</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<!-- <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.3&key=07d85e301fb949d8ac439e834ccffa62"></script>   -->
+<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=07d85e301fb949d8ac439e834ccffa62&plugin=AMap.Geocoder"></script>
+</head>
+	<style type="text/css">
+	    document,html,body{height: 100%;width: 100%;}
+	    *{padding:0px;margin:0px;}
+        #container {width:80%; height:100%; overflow: auto; float: left;}
+        #panel {width:20%; height:100%; overflow: auto; float: left;}
+	</style>
+	<body onload = "regec()">
+	    <div id="container"></div>
+        <div id="panel">
+            起点<input type="text" id="startArea" onclick="clickInput(this)" value=""><br>
+            终点<input type="text" id="endArea" onclick="clickInput(this)" value=""><br>
+            <input type="button" onclick="addPoint()" value="添加" style="width:90%;"><br>
+            <textarea style="width:100%;height:80%;margin:0px;padding:0px;" id="txtArea"></textarea>
+            <input type="button" onclick="createLinep()" value="创建" style="margin:0px;padding:0px;width:100%;height:10%;margin-top:10px;text-align:center;">
+        </div>
+		<script type="text/javascript">
+        var map = new AMap.Map("container");
+
+        function regec(){
+            geocoder = new AMap.Geocoder({radius: 500,extensions: "all"});
+            new scanNearPoint([108.1034,34.12458],{},function(a,b){
+                console.info(a);
+                console.info(b);
+            },10);
+        }
+            /*var geocoder = null;
+            AMap.plugin(['AMap.ToolBar','AMap.Scale','AMap.OverView'],
+                function(e){
+                    console.info(e);
+                    var toolBar = new AMap.ToolBar();
+                    var scale = new AMap.Scale();
+                    mapObj.addControl(toolBar);
+                    mapObj.addControl(scale);
+                    geocoder = AMap.Geocoder({radius: 1000,extensions: "all"});
+                    console.info(geocoder);
+                }
+            );*/
+
+            /*// 地址获取经纬度   
+            function a(address,geocoder_CallBack){
+                var geocoder = new AMap.Geocoder({
+                    radius: 500
+                });
+
+                geocoder.getLocation("陕西安康", function(status, result) {
+                    if (status === 'complete' && result.info === 'OK') {
+                        geocoder_CallBack(result);
+                    }
+                });
+            } 
+        
+            var driving = new AMap.Driving(); //构造驾车导航类
+            driving.search([{keyword:'北京市地震局(公交站)'},{keyword:'亦庄文化园(地铁站)'}], function(status, result){
+                if(status === 'complete' && result.info === 'OK'){
+   
+                }else{
+                     alert(result);
+                }
+            });
+
+            // 经纬度获取地理名称  
+
+            function geocoder_CallBack(data) {
+                var address = data.regeocode.formattedAddress; //返回地址描述
+                document.getElementById("result").innerHTML = address;
+            }
+
+            function addPoint(){
+                start = document.getElementById("startArea");
+                end = document.getElementById("endArea");
+
+                var driving = new AMap.Driving(); 
+                driving.search([{keyword:start},{keyword:end}],function(status,result){
+
+                });
+            };*/
+
+            function scanNearPoint(point,cusObj,onResult,redius){
+                var _this = this;
+                var _onResult = onResult;
+                var _point = point;
+                var _cusObj = cusObj;
+
+                var _redius = redius;
+                var _points = [];
+                
+                var _rangStart = [];
+                var _rangEnd = [];
+
+                this.start = function(){
+                    _rangStart = [_this.getLng(_point[0],-_redius),_this.getlat(_point[1],_redius)];//左上角
+                    _rangEnd = [_this.getLng(_point[0],_redius),_this.getlat(_point[1],-_redius)]; //右下角
+                    
+                    lngMin = _rangStart[0];
+                    lngMax = _rangEnd[0];
+                    
+                    latMin = _rangEnd[1];
+                    latMax = _rangStart[1];
+
+                    points = [];
+                    while(lngMin<=(lngMax+avgLng)){
+                        var array = [];
+                        latMin = _rangEnd[1];
+                        while(latMin<=(latMax+avgLat)){
+                            array.push([lngMin,latMin]);
+                            latMin += avgLat;
+                        }
+                        points.push(array);
+                        lngMin += avgLng;
+                    }
+                    _this.fetchAddress(points,_cusObj);
+                };
+                
+                this.getLng = function(curLng,dis){
+                    return curLng + avgLng*dis;  
+                };
+
+                this.getlat = function(curLat,dis){
+                    return curLat + avgLat*dis;  
+                };
+                 
+                this.fetchAddress = function(points,_cusObj){
+                    for(var i=0;i<points.length;i++){
+                        for(var j=0;j<points[i].length;j++){
+                            new regeocoder(points[i][j],_this.AddressResult,cusObj);
+                        }
+                    }
+                };
+                
+                this.AddressResult = function(result,custObj){
+
+                    console.info(result);
+                    console.info(custObj);
+                };
+                _this.start();
+            };
+            
+            function regeocoder(lnglatXY,geocoder_CallBack,cusObj) {
+                var _geocoder_CallBack = geocoder_CallBack;
+                var _cusObj = cusObj;
+ 
+                geocoder.getAddress(lnglatXY, function(status, result) {
+                    if (status === 'complete' && result.info === 'OK') {
+                        _geocoder_CallBack(result,_cusObj);
+                    }
+                });   
+            }
+
+            //经度最小值
+            var lngMin = 73.5500000000;
+            //经度最大值
+            var lngMax = 135.08333333333;
+            
+            //维度最小值
+            //3.8500000000;
+            var latMin = 18.0000000000;
+            //维度最大值
+            var latMax = 53.550000000;
+            
+            //经度最大夸距长度
+            var lngDis = 5200000;
+            //维度最大跨距长度
+            var latDis = 4033410;
+            
+            //经度最大跨度
+            var lngLen = lngMax-lngMin;
+            //维度最大跨度
+            var latLen = latMax-latMin;
+
+            var perLngDis = parseInt(lngDis/(Math.sin(45)*10000));
+            var perLatDis = parseInt(latDis/(Math.sin(45)*10000));
+
+            //经度平均跨度 
+            var avgLng = lngLen/perLngDis;
+            var avgLat = latLen/perLatDis;
+
+	    </script>
+	</body>
+</html>

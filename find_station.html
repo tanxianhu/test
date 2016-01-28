@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.3&key=110c573f233d8e8a75b96d48f7a2f678"+new Date()></script>  
+</head>
+	<style type="text/css">
+	    document,html,body{height: 100%;width: 100%;}
+	    *{padding:0px;margin:0px;}
+        #container {width:100%; height:100%; overflow: auto; float: left;}
+	</style>
+	<body>
+	    <div id="container"></div>
+       
+        <script type="text/javascript">
+            mapObj = new AMap.Map("container");
+            AMap.plugin(['AMap.ToolBar','AMap.Scale','AMap.OverView'],function(){
+                var toolBar = new AMap.ToolBar();
+                var scale = new AMap.Scale();
+                mapObj.addControl(toolBar);
+                mapObj.addControl(scale);
+            });
+            
+            placeSearch = null;
+            AMap.service(["AMap.PlaceSearch"], function() {placeSearch = new AMap.PlaceSearch({pageSize:50});});
+
+            //经度最小值
+            var lngMin = 73.5500000000;
+            //经度最大值
+            var lngMax = 135.08333333333;
+            
+            //维度最小值
+            var latMin = 18.0000000000;// 3.8500000000;
+            //维度最大值
+            var latMax = 53.550000000;
+            
+            //经度最大夸距长度
+            var lngDis = 5200000;
+            //维度最大跨距长度
+            var latDis = 4033410;
+            
+            //经度最大跨度
+            var lngLen = lngMax-lngMin;
+            //维度最大跨度
+            var latLen = latMax-latMin;
+
+            var perLngDis = parseInt(lngDis/(Math.sin(45)*10000));
+            var perLatDis = parseInt(latDis/(Math.sin(45)*10000));
+
+            //经度平均跨度 
+            var avgLng = lngLen/perLngDis;
+            var avgLat = latLen/perLatDis;
+            
+            var points = [];
+            while(lngMin<=(lngMax+avgLng)){
+                var array = [];
+                latMin = 18.0000000000;
+                while(latMin<=(latMax+avgLat)){
+                    array.push([lngMin,latMin]);
+                    latMin += avgLat;
+                }
+                points.push(array);
+                lngMin += avgLng;
+            }
+
+            var currentRow = null;
+            var nextRow = null;
+            var p1 = null;
+            var p2 = null;
+            
+            var p3 = null;
+            var p4 = null;
+
+            var pointsCenter = [];
+            for(var i = 0;i < points.length-1;i++){
+                currentRow = points[i];
+                nextRow = points[i+1];
+
+                for(var j = 0;j<currentRow.length-1;j++){
+                    p1 = currentRow[j];
+                    p2 = currentRow[j+1];
+
+                    p3 = nextRow[j];
+                    p4 = nextRow[j+1];
+                    
+                    pointsCenter.push([(p1[0]+p3[0])/2, (p1[1]+p2[1])/2]);
+                }
+            }
+            
+            var stationS = [];
+            for(var i=0;i<pointsCenter.length;i++){
+                placeSearch.searchNearBy("收费站",[pointsCenter[i][0],pointsCenter[i][1]],50000,function(status,result){
+                    if(typeof(result.poiList) == "undefined"){
+                        return;
+                    }
+
+                    ary = result.poiList.pois;
+                    for(var j=0;j<ary.length;j++){
+
+                       createMarkByFromCono(mapObj,ary[j].location.lng,ary[j].location.lat,"green",1,"s",null,null,null);
+                       stationS.push(ary[j]);
+                    }
+                });
+                //createMarkByFromCono(mapObj,pointsCenter[i][0],pointsCenter[i][1],"green",1,"0",null,null,null);
+            }
+            
+
+
+            /** 创建地图坐标点 */
+            function createMarkByFromCono(maps,lng,lat,color,size,content,click,dblclick,obj){
+                var divs  = "<div style='width:"+size+";height:"+size+";background-color:"+color+"; border-radius:100%'>"+content+"</div>";
+                var options = {position:[lng,lat],map:maps,content:divs,offset:new AMap.Pixel(-3,-3)};
+                var marker = new AMap.Marker(options);
+                marker.dataObj = obj;
+
+                if(click != null){
+                   marker.on('click',click);
+                }
+               
+                if (dblclick != null){
+                    marker.on('dblclick', dblclick);
+                }
+               
+                return marker;
+            };
+
+
+             /** 在地图上创建线段 */
+            function createLine(map,content,alng,alat,blng,blat,color,weight,obj,click,dblclick){
+                var arr = new Array();
+                arr.push(new AMap.LngLat(alng,alat)); 
+                arr.push(new AMap.LngLat(blng,blat)); 
+
+                var polyline = new AMap.Polyline({map:map,path:arr,strokeColor:color,strokeOpacity:1,strokeWeight:weight});  
+                polyline.datas = obj;
+                polyline.content = content;
+                if(click !=null){
+                    polyline.on('click', click);
+                }
+                
+                if(dblclick != null){
+                    polyline.on('dblclick', dblclick);
+                }
+
+                return polyline;
+            }
+            
+            var drivingOption = {
+                policy:AMap.DrivingPolicy.LEAST_TIME
+            };
+            var driving = new AMap.Driving(drivingOption); //构造驾车导航类
+            //根据起终点坐标规划驾车路线
+            driving.search([{keyword:'北京市地震局(公交站)'},{keyword:'亦庄文化园(地铁站)'}], function(status, result){
+				if(status === 'complete' && result.info === 'OK'){
+					(new Lib.AMap.DrivingRender()).autoRender({
+						data: result,
+		                map: map,
+		                panel: "panel"
+		            });
+				}else{
+		             alert(result);
+		        }
+	       });
+        </script>
+	</body>
+</html>

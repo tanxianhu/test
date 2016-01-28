@@ -1,0 +1,131 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=019a9e6739ed0fdf19f17a28421f6fe1"></script>  
+	</head>
+	<style type="text/css">
+	    document,html,body{height: 100%;width: 100%;}
+	    *{padding:0px;margin:0px;}
+        #container {width:70%; height:100%; overflow: auto; float: left;}
+        #panel{width: 30%;height:100%; overflow: auto; float: left;}
+	</style>
+	<body>
+	    <div id="container"></div>
+	    <div id="panel">
+	    	start:<input type="text" id="start" value="连云港">
+	    	end:  <input type="text" id="end" value="霍尔果斯">
+	    	<input type="button"  value="搜索" onclick="serachLatLng()">
+            <input type="button"  value="" id="startBtn" onclick="sendObj.start();">
+
+	    	<div id="pan"></div>
+	    </div>
+		<script type="text/javascript">
+            var sendObj = null;
+
+			mapObj = new AMap.Map("container");
+			AMap.plugin(['AMap.ToolBar','AMap.Scale','AMap.OverView'],function(){
+	            var toolBar = new AMap.ToolBar();
+	            var scale = new AMap.Scale();
+	            mapObj.addControl(toolBar);
+	            mapObj.addControl(scale);
+            });
+             
+            driving = null;
+            a = 0;
+            datasArray = [];
+            markers={};
+            placeSearch = null;
+		    AMap.service(["AMap.PlaceSearch"], function() {
+		        placeSearch = new AMap.PlaceSearch();
+		    });
+
+            function getLoacl(da){
+            	var _this = this;
+                var _da = da;
+            	this.serach = function(){
+                    driving.search([{keyword:da.start},{keyword:da.end}], function(status, result){
+                    	console.info(result);
+                    	d1 = null;
+                    	data = result.routes[0].steps;
+                    	datasArray.push({"lng":data[0].start_location.lng,"lat":data[0].start_location.lat});
+                    	for(var i=0;i<data.length;i++){
+                    		d1 = data[i];
+
+                    		var lasPoint = {"lng":d1.start_location.lng,"lat":d1.start_location.lat};
+                    		var tem = {"lng":d1.end_location.lng,"lat":d1.end_location.lat};
+                    		var paths = d1.path.concat();
+                    		paths.push(tem);
+
+                    		d2 = null;
+                    		for(var j=0;j<paths.length;j++){
+                                d2 = paths[j];
+                                dis= execDis(d2.lat,d2.lng,lasPoint.lat,lasPoint.lng);
+
+                                if(dis != NaN && dis > 1500){
+                                	datasArray.push(d2);
+                                    lasPoint = d2;
+                                }
+                    		}
+                    	}
+                        sendObj = new syncSend({"datas":datasArray,"search":{"range":3000,"keys":"收费站"}});
+                        sendObj.start();
+                    });
+            	}
+            }
+
+            AMap.service('AMap.Driving',function(){
+		        driving = new AMap.Driving({map:mapObj});
+            });
+
+            function serachLatLng(){
+            	var start = document.getElementById("start").value;
+            	var end = document.getElementById("end").value;
+                new getLoacl({"start":start,"end":end}).serach(); 
+            }
+           
+            function createMark(map,obj,title,icon){
+		       var marker = new AMap.Marker({position:[obj["lng"],obj["lat"]],map:map,title:title,icon:icon});
+		       marker.on("click",function(e){});
+		       return marker;
+		    }
+
+		    var EARTH_RADIUS = 6378137.0; //单位M 
+			var PI = Math.PI; 
+
+			function getRad(d){ 
+				return d*PI/180.0; 
+		    } 
+
+		    /** 计算两经纬度距离 */
+		    function execDis(lat1,lng1,lat2,lng2){
+				var f = getRad((lat1 + lat2)/2); 
+				var g = getRad((lat1 - lat2)/2); 
+				var l = getRad((lng1 - lng2)/2); 
+
+				var sg = Math.sin(g); 
+				var sl = Math.sin(l); 
+				var sf = Math.sin(f); 
+
+				var s,c,w,r,d,h1,h2; 
+				var a = EARTH_RADIUS; 
+				var fl = 1/298.257; 
+
+				sg = sg*sg; 
+				sl = sl*sl; 
+				sf = sf*sf; 
+
+				s = sg*(1-sl) + (1-sf)*sl; 
+				c = (1-sg)*(1-sl) + sf*sl; 
+
+				w = Math.atan(Math.sqrt(s/c)); 
+				r = Math.sqrt(s*c)/w; 
+				d = 2*w*a; 
+				h1 = (3*r -1)/2/c; 
+				h2 = (3*r +1)/2/s; 
+                 
+				return d*(1 + fl*(h1*sf*(1-sg) - h2*(1-sf)*sg)); 
+			}
+            
+            
+	    </script>
+	</body>
+</html>

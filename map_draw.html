@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>地点搜索服务</title>
+    <style type="text/css">
+        html,body{
+            margin:0;
+            height:100%;
+            width:100%;
+        }
+        #mapContainer{
+            height:100%;
+            width:100%;
+        }
+        #result{
+            border: solid 1px grey;
+            position: absolute;
+            background-color:white ;
+            max-height: 100%;
+            overflow-y: auto;
+            right: 0;
+            bottom: 0;
+            width: 280px;
+        }
+    </style>
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=019a9e6739ed0fdf19f17a28421f6fe1"></script>
+<body>
+<div id="mapContainer" ></div>
+<div id="result">
+</div>
+<script type="text/javascript">
+    var map = new AMap.Map("mapContainer", {
+        resizeEnable: true,
+        zoom:12
+    });
+    
+    markers = {};
+
+    placeSearch = null;
+    AMap.service(["AMap.PlaceSearch"], function() {
+        placeSearch = new AMap.PlaceSearch();
+    });
+
+    var range = 1500;
+
+    array = [];
+    map.on("click",function(e){
+    	var p = {"lng":e.lnglat.r,"lat":e.lnglat.w};
+    	BMplaceSearch(p.lng,p.lat,3000,"收费站");
+    	array.push(p);
+        if(array.length>1){
+    	    createMarkss(array);
+    	    createLine(map,"#c062d3",array[0],array[1]);
+    	    array = [];
+    	    array.push(p);
+    	}
+    });
+    
+    function createMarkss(arrays){
+	    var p1 = arrays[arrays.length-2];
+	    var p2 = arrays[arrays.length-1];
+	    arrays = [];
+        var p3 = execSan(p1.lng,p1.lat,p2.lng,p2.lat,range);
+
+        if(p3 != null){
+            BMplaceSearch(p3.lng,p3.lat,3000,"收费站");
+            disa = getFlatternDistance(p1.lat,p1.lng,p3.lat,p2.lng);
+            arrays.push(p3);
+            arrays.push(p2);
+            createMarkss(arrays);
+        }
+    	
+    }
+    
+    function BMplaceSearch(lng,lat,range,keys){
+        placeSearch.searchNearBy(keys,[lng,lat],range,function(status,result){
+            if("complete" == status && "OK"==result.info){
+	           	ary = result.poiList.pois;
+	            for(var i=0;i<ary.length;i++){
+	            	if(typeof(markers[ary[i].name])=="undefined"){
+	                    markers[ary[i].name] = createMark(map,{"lng":ary[i].location.r,"lat":ary[i].location.w},ary[i].name);
+	                }
+	            }
+            }
+        });
+    }
+
+
+    /** 计算经纬度上的点距第一个位置相距range米的点的坐标 */
+    function execSan(lng1,lat1,lng2,lat2,range){
+       dis1 = getFlatternDistance(lat1,lng1,lat2,lng2);
+       if(range>dis1){
+       	   return null;
+       }
+       
+       point = {"lng":0.0,"lat":0.0};
+       point.lng = (lng2-lng1)*range/dis1+lng1;
+       point.lat = (lat2-lat1)*range/dis1+lat1;
+       return point;
+    }
+    
+    var EARTH_RADIUS = 6378137.0; //单位M 
+	var PI = Math.PI; 
+
+	function getRad(d){ 
+		return d*PI/180.0; 
+    } 
+
+    /** 计算两经纬度距离 */
+    function getFlatternDistance(lat1,lng1,lat2,lng2){ 
+		var f = getRad((lat1 + lat2)/2); 
+		var g = getRad((lat1 - lat2)/2); 
+		var l = getRad((lng1 - lng2)/2); 
+
+		var sg = Math.sin(g); 
+		var sl = Math.sin(l); 
+		var sf = Math.sin(f); 
+
+		var s,c,w,r,d,h1,h2; 
+		var a = EARTH_RADIUS; 
+		var fl = 1/298.257; 
+
+		sg = sg*sg; 
+		sl = sl*sl; 
+		sf = sf*sf; 
+
+		s = sg*(1-sl) + (1-sf)*sl; 
+		c = (1-sg)*(1-sl) + sf*sl; 
+
+		w = Math.atan(Math.sqrt(s/c)); 
+		r = Math.sqrt(s*c)/w; 
+		d = 2*w*a; 
+		h1 = (3*r -1)/2/c; 
+		h2 = (3*r +1)/2/s; 
+
+		return d*(1 + fl*(h1*sf*(1-sg) - h2*(1-sf)*sg)); 
+	}
+
+	function createMark(map,obj,title){
+       var marker = new AMap.Marker({position:[obj["lng"],obj["lat"]],map:map,title:title});
+       return marker;
+    }
+
+    function createLine(map,color,start,end){
+        var arr = new Array();
+        arr.push(new AMap.LngLat(start.lng,start.lat)); 
+        arr.push(new AMap.LngLat(end.lng,end.lat)); 
+
+        var polyline = new AMap.Polyline({map:map,path:arr,strokeColor:color,strokeOpacity:1,strokeWeight:5});  
+        return polyline;
+    }
+</script>
+</body>
+</html>
+
+	
